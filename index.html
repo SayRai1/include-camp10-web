@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>INClude Camp 10 — ลูกแก้วความทรงจำ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;overflow-x:hidden}
+body{
+  font-family:'Noto Sans Thai','Segoe UI',sans-serif;
+  background:linear-gradient(170deg,#0A1628 0%,#122040 40%,#1A1040 100%);
+  color:#fff;
+  position:relative;
+}
+button{cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+button:active{transform:scale(.97)}
+input,textarea{border:none;font-family:inherit}
+input:focus,button:focus,textarea:focus{outline:2px solid rgba(255,217,61,.5);outline-offset:2px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+
+/* Floating BG orbs */
+.bg-orbs{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.bg-orb{position:absolute;border-radius:50%}
+
+/* Animations */
+@keyframes floatBg{0%,100%{transform:translateY(0) translateX(0)}33%{transform:translateY(-30px) translateX(15px)}66%{transform:translateY(20px) translateX(-10px)}}
+@keyframes floatjoy{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floatsadness{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes floatanger{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes floatdisgust{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.view{position:relative;z-index:1}
+.orbs-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:28px 12px;max-width:900px;margin:16px auto;padding:24px 8px}
+.orb-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1 1 150px;max-width:200px}
+.orb{border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .6s cubic-bezier(.34,1.56,.64,1);cursor:default;position:relative}
+.ranking-box{max-width:500px;margin:20px auto 0;padding:16px 20px;background:rgba(255,255,255,.04);border-radius:20px;border:1px solid rgba(255,255,255,.06)}
+.rank-row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:12px;margin-bottom:4px}
+.card{padding:16px 20px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:16px}
+.glass-card{padding:20px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(20px);margin-bottom:16px}
+.admin-container{max-width:500px;margin:0 auto;padding:16px 16px 100px}
+.team-btn{flex:1 1 calc(33% - 8px);min-width:90px;padding:10px 6px;border-radius:14px;font-size:13px;font-weight:700}
+.quick-btn{padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:1000;padding:12px 28px;border-radius:16px;color:#fff;font-weight:700;font-size:15px;animation:toastIn .3s ease-out;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.hidden{display:none!important}
+.hist-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+
+/* ==== NEW: connection / setup ==== */
+.overlay{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px 0;overflow-y:auto;background:linear-gradient(170deg,#0A1628 0%,#122040 40%,#1A1040 100%)}
+.setup-box{max-width:520px;width:100%;margin:auto 16px;padding:26px 22px;border-radius:24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);text-align:center}
+.setup-box h2{font-size:20px;margin-bottom:8px;color:rgba(255,255,255,.88)}
+.setup-box p{font-size:13px;color:rgba(255,255,255,.45);line-height:1.65}
+.setup-box a{color:#FFD93D;font-weight:700}
+.setup-box ol{text-align:left;font-size:13px;color:rgba(255,255,255,.6);line-height:1.75;padding-left:20px;margin:16px 0}
+.setup-box ol li{margin-bottom:10px}
+.setup-box ol b{color:#fff}
+.setup-box ol i{color:#5ABF5A;font-style:normal}
+.setup-box code{display:block;text-align:left;font-size:11px;background:rgba(0,0,0,.35);padding:10px 12px;border-radius:10px;color:#FFD93D;overflow-x:auto;white-space:pre;margin:8px 0;line-height:1.5}
+.setup-box textarea{width:100%;min-height:130px;padding:12px 14px;border-radius:14px;font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace;background:rgba(0,0,0,.3);color:#fff;border:1px solid rgba(255,255,255,.1);resize:vertical;margin-bottom:10px;line-height:1.5}
+.setup-box textarea::placeholder{color:rgba(255,255,255,.2)}
+.live-dot{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 12px;border-radius:20px;background:rgba(90,191,90,.1);border:1px solid rgba(90,191,90,.2)}
+.live-dot span.d{width:6px;height:6px;border-radius:50%;background:#5ABF5A;animation:pulse 1.6s infinite}
+.live-dot span.t{font-size:11px;color:#5ABF5A;font-weight:700;letter-spacing:.5px}
+.live-dot.off{background:rgba(232,69,60,.1);border-color:rgba(232,69,60,.2)}
+.live-dot.off span.d{background:#E8453C}
+.live-dot.off span.t{color:#E8453C}
+</style>
+</head>
+<body>
+
+<!-- ===== Loading overlay ===== -->
+<div id="loadingScreen" class="overlay">
+  <div style="text-align:center">
+    <div style="font-size:48px;margin-bottom:10px">🔮</div>
+    <div style="color:#FFD93D;font-size:18px;font-weight:700;animation:pulse 1.4s infinite">กำลังเชื่อมต่อ...</div>
+  </div>
+</div>
+
+<!-- ===== Setup overlay (แสดงเมื่อยังไม่ได้ตั้งค่า Firebase) ===== -->
+<div id="setupScreen" class="overlay hidden">
+  <div class="setup-box">
+    <div style="font-size:42px;margin-bottom:6px">🔥</div>
+    <h2>ตั้งค่าที่เก็บข้อมูล (ทำครั้งเดียว)</h2>
+    <p>ใช้ Firebase เป็นที่เก็บคะแนนกลาง ฟรี 100%<br>ทุกคนจะเห็นคะแนนตรงกันแบบเรียลไทม์</p>
+    <ol>
+      <li>เปิด <a href="https://console.firebase.google.com" target="_blank" rel="noopener">console.firebase.google.com</a> → <b>Create a project</b> → ตั้งชื่อ (เช่น <i>include-camp-10</i>) → ปิด Analytics ได้ → Create</li>
+      <li>เมนูซ้าย <b>Build → Firestore Database</b> → <b>Create database</b> → location <b>asia-southeast1</b> → <b>Start in test mode</b> → Enable</li>
+      <li>แท็บ <b>Rules</b> → วางโค้ดนี้ → <b>Publish</b>:
+        <code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /camp/data {
+      allow read, write: if true;
+    }
+  }
+}</code>
+      </li>
+      <li>⚙️ <b>Project settings</b> → <b>Your apps</b> → ไอคอน <b>&lt;/&gt;</b> (Web) → ตั้งชื่อ → <b>Register app</b></li>
+      <li>คัดลอกก้อน <b>firebaseConfig</b> มาวางข้างล่าง 👇</li>
+    </ol>
+    <textarea id="configPaste" placeholder='วาง firebaseConfig ตรงนี้ เช่น:
+
+const firebaseConfig = {
+  apiKey: "AIza....",
+  authDomain: "xxx.firebaseapp.com",
+  projectId: "xxx",
+  storageBucket: "xxx.appspot.com",
+  messagingSenderId: "123456",
+  appId: "1:123:web:abc"
+};'></textarea>
+    <div id="configError" class="hidden" style="color:#E8453C;font-size:12px;font-weight:600;margin-bottom:8px"></div>
+    <button onclick="applyPastedConfig()" style="width:100%;padding:14px;border-radius:14px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#FFD93D,#FF9F43);color:#1A1040">🚀 เชื่อมต่อ</button>
+    <p style="font-size:11px;margin-top:10px;color:rgba(255,255,255,.3)">config จะถูกจำไว้ในเครื่องนี้ · ถ้าอยากให้ทุกคนใช้ได้ทันที ให้ใส่ใน <b style="color:rgba(255,255,255,.5)">FIREBASE_CONFIG</b> ในไฟล์ก่อน deploy</p>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- Floating BG Orbs -->
+<div class="bg-orbs" id="bgOrbs"></div>
+
+<!-- ========== SCOREBOARD VIEW ========== -->
+<div id="viewScoreboard" class="view" style="padding:28px 16px 100px;animation:slideUp .5s ease-out">
+  <!-- Header -->
+  <div style="text-align:center;margin-bottom:4px">
+    <div style="font-size:13px;color:rgba(255,255,255,.4);letter-spacing:4px;text-transform:uppercase;font-weight:700;margin-bottom:4px">INClude Camp 10</div>
+    <h1 style="font-size:clamp(26px,6vw,42px);font-weight:900;letter-spacing:1px;background:linear-gradient(135deg,#FFD93D,#FF9F43,#E8453C,#5B9BD5,#5ABF5A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2">🔮 ลูกแก้วความทรงจำ</h1>
+    <div style="font-size:13px;color:rgba(255,255,255,.35);margin-top:4px;font-weight:600">Memory Orbs Scoreboard</div>
+    <div class="live-dot" id="liveDot"><span class="d"></span><span class="t">LIVE</span></div>
+  </div>
+
+  <!-- Hidden banner -->
+  <div id="hiddenBanner" class="hidden" style="margin:8px 16px;padding:14px 20px;border-radius:16px;text-align:center;background:rgba(255,217,61,.1);border:1px solid rgba(255,217,61,.2);color:#FFD93D;font-weight:700;font-size:15px">
+    ✨ คะแนนถูกปิดไว้ชั่วคราว รอติดตามผลลัพธ์เร็วๆนี้!
+  </div>
+
+  <!-- Orbs -->
+  <div class="orbs-grid" id="orbsGrid"></div>
+
+  <!-- Ranking -->
+  <div class="ranking-box" id="rankingBox"></div>
+
+  <!-- Admin button -->
+  <div style="text-align:center;margin-top:32px">
+    <button onclick="goToLogin()" style="padding:12px 32px;border-radius:16px;font-size:14px;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(10px)" id="adminAccessBtn">
+      🔑 เข้าสู่ระบบพี่ค่าย
+    </button>
+  </div>
+</div>
+
+<!-- ========== LOGIN VIEW ========== -->
+<div id="viewLogin" class="view hidden" style="padding:40px 16px;animation:slideUp .4s ease-out">
+  <div style="max-width:380px;margin:0 auto;padding:32px 24px;border-radius:24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(20px)">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:40px;margin-bottom:8px">🔐</div>
+      <div style="font-size:18px;font-weight:800;color:rgba(255,255,255,.8)">เข้าสู่ระบบพี่ค่าย</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.35);margin-top:4px">ใส่รหัสผ่านเพื่อจัดการคะแนน</div>
+    </div>
+    <input type="password" id="loginPassInput" placeholder="รหัสผ่าน" style="width:100%;padding:14px 18px;border-radius:14px;font-size:16px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.1)">
+    <div id="loginError" class="hidden" style="color:#E8453C;font-size:13px;font-weight:600;margin-top:8px;text-align:center">รหัสผ่านไม่ถูกต้อง ลองใหม่อีกครั้ง</div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="showView('scoreboard')" style="flex:1;padding:14px;border-radius:14px;font-size:15px;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)">← กลับ</button>
+      <button onclick="handleLogin()" style="flex:2;padding:14px;border-radius:14px;font-size:15px;font-weight:700;background:linear-gradient(135deg,#FFD93D,#FF9F43);color:#1A1040">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ADMIN VIEW ========== -->
+<div id="viewAdmin" class="view hidden admin-container" style="animation:slideUp .4s ease-out">
+  <!-- Top bar -->
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button onclick="showView('scoreboard')" style="padding:12px 20px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)">← กลับ</button>
+    <button id="toggleVisBtn" onclick="toggleVisibility()" style="flex:1;padding:12px;border-radius:14px;font-size:14px;font-weight:700"></button>
+  </div>
+
+  <!-- Current Scores Mini -->
+  <div class="card" id="adminScoresMini"></div>
+
+  <!-- Add Score Card -->
+  <div class="glass-card">
+    <div style="font-size:16px;font-weight:800;color:rgba(255,255,255,.7);margin-bottom:16px">✨ เพิ่ม/ลดคะแนน</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="teamSelector"></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input type="number" id="pointsInput" placeholder="คะแนน (ใส่ - เพื่อลด)" style="flex:1;padding:14px 16px;border-radius:14px;font-size:16px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.1)">
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap" id="quickBtns"></div>
+    <input type="text" id="noteInput" placeholder="หมายเหตุ (ไม่จำเป็น)" style="width:100%;padding:12px 16px;border-radius:14px;font-size:14px;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08);margin-bottom:14px">
+    <button id="addScoreBtn" onclick="handleAddScore()" style="width:100%;padding:16px;border-radius:16px;font-size:16px;font-weight:800;background:rgba(255,255,255,.05);color:rgba(255,255,255,.2)">✨ เพิ่มคะแนน</button>
+  </div>
+
+  <!-- History -->
+  <div class="card">
+    <button onclick="toggleHistory()" style="width:100%;background:none;color:rgba(255,255,255,.5);font-size:14px;font-weight:700;padding:0;text-align:left;display:flex;justify-content:space-between;align-items:center">
+      <span id="histLabel">📜 ประวัติการให้คะแนน (0)</span>
+      <span id="histArrow" style="font-size:12px">▼</span>
+    </button>
+    <div id="historyList" class="hidden" style="margin-top:12px;max-height:300px;overflow-y:auto"></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="card">
+    <button onclick="toggleSettings()" style="width:100%;background:none;color:rgba(255,255,255,.5);font-size:14px;font-weight:700;padding:0;text-align:left;display:flex;justify-content:space-between;align-items:center">
+      <span>⚙️ ตั้งค่า</span>
+      <span id="settingsArrow" style="font-size:12px">▼</span>
+    </button>
+    <div id="settingsPanel" class="hidden" style="margin-top:14px">
+      <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:8px">เปลี่ยนรหัสผ่าน</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input type="text" id="newPassInput" placeholder="รหัสใหม่ (4+ ตัว)" style="flex:1;padding:10px 14px;border-radius:12px;font-size:14px;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)">
+        <button onclick="changePassword()" id="savePassBtn" style="padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,255,255,.04);color:rgba(255,255,255,.2)">บันทึก</button>
+      </div>
+      <button onclick="resetAllScores()" style="width:100%;padding:12px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(232,69,60,.1);color:#E8453C;border:1px solid rgba(232,69,60,.2)">🗑️ รีเซ็ตคะแนนทั้งหมด</button>
+      <button onclick="logout()" style="width:100%;padding:12px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);margin-top:8px;border:none">🚪 ออกจากระบบ</button>
+      <div id="fbStatus" style="font-size:10px;color:rgba(255,255,255,.22);text-align:center;margin-top:10px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Firebase SDK ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script>
+// ╔══════════════════════════════════════════════════════════╗
+// ║  🔧 ใส่ Firebase Config ของคุณตรงนี้                      ║
+// ║  ได้จาก: Firebase Console → Project Settings → Web App   ║
+// ║  (ถ้าเว้นว่างไว้ เว็บจะขึ้นหน้าตั้งค่าให้วางแทน)              ║
+// ╚══════════════════════════════════════════════════════════╝
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBXSMcfXPw4MW6Jzgk2807LIaafpT2N9Oc",
+  authDomain: "include10-bebd1.firebaseapp.com",
+  projectId: "include10-bebd1",
+  storageBucket: "include10-bebd1.firebasestorage.app",
+  messagingSenderId: "582805356068",
+  appId: "1:582805356068:web:aba6e577f06ddffc54a2b1",
+  measurementId: "G-XFD8ESM3ZV"
+};
+
+// ===== DATA =====
+const CFG_KEY = 'include-camp-fb-config';
+const DEFAULT_TEAMS = [
+  {id:'joy',name:'Joy',nameTh:'ความสุข',emoji:'😊',color:'#FFD93D',glow:'rgba(255,217,61,0.6)',dark:'#B8960A'},
+  {id:'sadness',name:'Sadness',nameTh:'ความเศร้า',emoji:'😢',color:'#5B9BD5',glow:'rgba(91,155,213,0.6)',dark:'#2E5F8A'},
+  {id:'anger',name:'Anger',nameTh:'ความโกรธ',emoji:'🔥',color:'#E8453C',glow:'rgba(232,69,60,0.6)',dark:'#8B1A12'},
+  {id:'disgust',name:'Disgust',nameTh:'ความรังเกียจ',emoji:'🥦',color:'#5ABF5A',glow:'rgba(90,191,90,0.6)',dark:'#2D6B2D'},
+];
+
+let db = null;
+let docRef = null;
+let data = null;
+let isAdmin = false;
+let selectedTeam = null;
+let historyOpen = false;
+let settingsOpen = false;
+let currentView = 'scoreboard';
+
+function defaultData(){
+  return {
+    teams: DEFAULT_TEAMS.map(t=>({...t, score:0})),
+    scoresVisible: true,
+    password: 'include10',
+    history: []
+  };
+}
+
+// ===== CONFIG =====
+function getConfig(){
+  if(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId) return FIREBASE_CONFIG;
+  try{
+    const saved = localStorage.getItem(CFG_KEY);
+    if(saved){
+      const c = JSON.parse(saved);
+      if(c.apiKey && c.projectId) return c;
+    }
+  }catch(e){}
+  return null;
+}
+
+function parsePastedConfig(txt){
+  try{ const o = JSON.parse(txt); if(o.apiKey && o.projectId) return o; }catch(e){}
+  const keys = ['apiKey','authDomain','projectId','storageBucket','messagingSenderId','appId','measurementId'];
+  const out = {};
+  keys.forEach(k=>{
+    const m = txt.match(new RegExp(k + '\\s*:\\s*[\'"`]([^\'"`]+)[\'"`]'));
+    if(m) out[k] = m[1];
+  });
+  return (out.apiKey && out.projectId) ? out : null;
+}
+
+function applyPastedConfig(){
+  const txt = document.getElementById('configPaste').value.trim();
+  const err = document.getElementById('configError');
+  if(!txt){ err.textContent='กรุณาวาง firebaseConfig ก่อน'; err.classList.remove('hidden'); return; }
+  const cfg = parsePastedConfig(txt);
+  if(!cfg){
+    err.textContent = 'อ่าน config ไม่ได้ — ต้องมี apiKey และ projectId ครบ ลองคัดลอกใหม่ทั้งก้อน';
+    err.classList.remove('hidden');
+    return;
+  }
+  err.classList.add('hidden');
+  try{ localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); }catch(e){}
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('loadingScreen').classList.remove('hidden');
+  startFirebase(cfg);
+}
+
+function showSetup(msg){
+  document.getElementById('loadingScreen').classList.add('hidden');
+  document.getElementById('setupScreen').classList.remove('hidden');
+  if(msg){
+    const err = document.getElementById('configError');
+    err.textContent = msg;
+    err.classList.remove('hidden');
+  }
+}
+
+function setLive(on){
+  const el = document.getElementById('liveDot');
+  if(!el) return;
+  el.classList.toggle('off', !on);
+  el.querySelector('.t').textContent = on ? 'LIVE' : 'OFFLINE';
+}
+
+// ===== FIREBASE =====
+function startFirebase(cfg){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(cfg);
+    db = firebase.firestore();
+    docRef = db.collection('camp').doc('data');
+    listenData();
+  }catch(e){
+    console.error('Firebase init error:', e);
+    try{ localStorage.removeItem(CFG_KEY); }catch(_){}
+    showSetup('เชื่อมต่อไม่สำเร็จ: ' + (e.message || 'ตรวจสอบ config อีกครั้ง'));
+  }
+}
+
+async function listenData(){
+  // สร้าง document เริ่มต้นถ้ายังไม่มี
+  try{
+    const snap = await docRef.get();
+    if(!snap.exists) await docRef.set(defaultData());
+  }catch(e){
+    console.error('Init error:', e);
+    if(e.code === 'permission-denied'){
+      showSetup('Firestore Rules ปิดอยู่ — ไปที่ Firestore → Rules แล้ววาง Rules ตามขั้นตอนที่ 3'); return;
+    }
+    if(e.code === 'unavailable' || e.code === 'failed-precondition'){
+      showSetup('ยังไม่ได้สร้าง Firestore Database — ทำตามขั้นตอนที่ 2'); return;
+    }
+  }
+
+  // ฟังการเปลี่ยนแปลงแบบเรียลไทม์ — ทุกคนเห็นพร้อมกัน
+  docRef.onSnapshot(snap=>{
+    data = snap.exists ? {...defaultData(), ...snap.data()} : defaultData();
+    if(!Array.isArray(data.teams) || !data.teams.length) data.teams = defaultData().teams;
+    if(!Array.isArray(data.history)) data.history = [];
+    // เติมทีมที่ขาด
+    const ids = data.teams.map(t=>t.id);
+    DEFAULT_TEAMS.forEach(dt=>{ if(!ids.includes(dt.id)) data.teams.push({...dt, score:0}); });
+
+    document.getElementById('loadingScreen').classList.add('hidden');
+    setLive(true);
+    const st = document.getElementById('fbStatus');
+    if(st) st.textContent = '🔥 เชื่อมต่อแล้ว · ' + ((getConfig()||{}).projectId || '-');
+
+    if(currentView === 'scoreboard') renderScoreboard();
+    if(currentView === 'admin') renderAdmin();
+  }, err=>{
+    console.error('Snapshot error:', err);
+    setLive(false);
+    let msg = 'เชื่อมต่อ Firestore ไม่ได้';
+    if(err.code === 'permission-denied') msg = 'Firestore Rules ปิดอยู่ — ไปที่ Firestore → Rules แล้ววาง Rules ตามขั้นตอนที่ 3';
+    else if(err.code === 'unavailable') msg = 'ยังไม่ได้เปิด Firestore Database — ทำตามขั้นตอนที่ 2';
+    if(!data) showSetup(msg);
+  });
+}
+
+// เขียนทั้ง document (ใช้กับ toggle / เปลี่ยนรหัส / reset)
+async function saveData(){
+  if(!docRef || !data) return;
+  try{ await docRef.set(data); }
+  catch(e){ console.error('Save error:', e); showToast('บันทึกไม่สำเร็จ ลองใหม่','error'); }
+}
+
+// ===== VIEWS =====
+function showView(name){
+  currentView = name;
+  document.getElementById('viewScoreboard').classList.toggle('hidden', name!=='scoreboard');
+  document.getElementById('viewLogin').classList.toggle('hidden', name!=='login');
+  document.getElementById('viewAdmin').classList.toggle('hidden', name!=='admin');
+  if(name==='scoreboard') renderScoreboard();
+  if(name==='admin') renderAdmin();
+  if(name==='login'){
+    document.getElementById('loginPassInput').value='';
+    document.getElementById('loginError').classList.add('hidden');
+    setTimeout(()=>document.getElementById('loginPassInput').focus(),100);
+  }
+}
+
+function goToLogin(){
+  if(isAdmin){ showView('admin'); }
+  else { showView('login'); }
+}
+
+// ===== TOAST =====
+let toastTimer = null;
+function showToast(msg, type='success'){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  const colors = {success:'rgba(90,191,90,.95)', info:'rgba(91,155,213,.95)', error:'rgba(232,69,60,.95)'};
+  el.style.background = colors[type] || colors.success;
+  el.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.add('hidden'), 2500);
+}
+
+// ===== FLOATING BG ORBS =====
+function createBgOrbs(){
+  const container = document.getElementById('bgOrbs');
+  container.innerHTML = '';
+  for(let i=0;i<18;i++){
+    const t = DEFAULT_TEAMS[i % DEFAULT_TEAMS.length];
+    const size = 8 + Math.random()*40;
+    const d = document.createElement('div');
+    d.className = 'bg-orb';
+    d.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.4),${t.color});opacity:${(.06+Math.random()*.12).toFixed(3)};animation:floatBg ${(15+Math.random()*25).toFixed(1)}s ease-in-out ${(Math.random()*-20).toFixed(1)}s infinite`;
+    container.appendChild(d);
+  }
+}
+
+// ===== RENDER SCOREBOARD =====
+function renderScoreboard(){
+  if(!data) return;
+  const sorted = [...data.teams].sort((a,b)=>b.score-a.score);
+  const maxScore = Math.max(...data.teams.map(t=>t.score),1);
+  const rankMap = {};
+  sorted.forEach((t,i)=> rankMap[t.id]=i+1);
+
+  document.getElementById('adminAccessBtn').innerHTML = isAdmin ? '🔑 เข้าแผงควบคุม' : '🔑 เข้าสู่ระบบพี่ค่าย';
+  document.getElementById('hiddenBanner').classList.toggle('hidden', data.scoresVisible || isAdmin);
+
+  // Orbs
+  const grid = document.getElementById('orbsGrid');
+  grid.innerHTML = '';
+  data.teams.forEach(team=>{
+    const rank = rankMap[team.id];
+    const growFactor = maxScore>0 ? Math.min(team.score/Math.max(maxScore,1),1) : 0;
+    const size = 130 + growFactor*50;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'orb-wrap';
+
+    if(rank<=3 && team.score>0 && data.scoresVisible){
+      const medal = document.createElement('div');
+      medal.style.cssText = `font-size:${rank===1?28:22}px;margin-bottom:-5px`;
+      medal.textContent = rank===1?'👑':rank===2?'🥈':'🥉';
+      wrap.appendChild(medal);
+    }
+
+    const orb = document.createElement('div');
+    orb.className = 'orb';
+    orb.style.cssText = `width:${size}px;height:${size}px;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.7),${team.color} 50%,${team.dark} 100%);box-shadow:0 0 ${20+growFactor*40}px ${team.glow},0 0 ${40+growFactor*60}px ${team.glow},inset 0 -8px 20px rgba(0,0,0,.2);animation:float${team.id} 4s ease-in-out infinite`;
+
+    const emoji = document.createElement('div');
+    emoji.style.cssText = 'font-size:28px;margin-bottom:2px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))';
+    emoji.textContent = team.emoji;
+
+    const score = document.createElement('div');
+    const fs = data.scoresVisible?(team.score>=1000?22:28):20;
+    score.style.cssText = `font-size:${fs}px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4);letter-spacing:1px`;
+    score.textContent = data.scoresVisible ? team.score : '???';
+
+    orb.appendChild(emoji);
+    orb.appendChild(score);
+    wrap.appendChild(orb);
+
+    const label = document.createElement('div');
+    label.style.textAlign = 'center';
+    label.innerHTML = `<div style="font-size:15px;font-weight:800;color:${team.color};text-shadow:0 0 10px ${team.glow};letter-spacing:.5px">${team.nameTh}</div><div style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:2px">${team.name}</div>`;
+    wrap.appendChild(label);
+
+    grid.appendChild(wrap);
+  });
+
+  // Ranking
+  const rBox = document.getElementById('rankingBox');
+  if(data.scoresVisible){
+    rBox.classList.remove('hidden');
+    let html = '<div style="font-size:14px;font-weight:800;color:rgba(255,255,255,.4);text-align:center;margin-bottom:12px;letter-spacing:2px;text-transform:uppercase">อันดับ</div>';
+    sorted.forEach((team,i)=>{
+      const bg = i===0 ? 'background:rgba(255,217,61,.08)' : '';
+      html += `<div class="rank-row" style="${bg}">
+        <div style="width:28px;font-size:16px;font-weight:900;color:${i===0?'#FFD93D':'rgba(255,255,255,.3)'};text-align:center">${i+1}</div>
+        <div style="width:10px;height:10px;border-radius:50%;background:${team.color};box-shadow:0 0 8px ${team.glow}"></div>
+        <div style="flex:1;font-size:15px;font-weight:700;color:rgba(255,255,255,.8)">${team.emoji} ${team.nameTh}</div>
+        <div style="font-size:18px;font-weight:900;color:${team.color};text-shadow:0 0 10px ${team.glow}">${team.score}</div>
+      </div>`;
+    });
+    rBox.innerHTML = html;
+  } else {
+    rBox.classList.add('hidden');
+  }
+}
+
+// ===== RENDER ADMIN =====
+function renderAdmin(){
+  if(!data) return;
+  const vBtn = document.getElementById('toggleVisBtn');
+  if(data.scoresVisible){
+    vBtn.style.cssText = 'flex:1;padding:12px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(232,69,60,.15);color:#E8453C;border:1px solid rgba(232,69,60,.3)';
+    vBtn.textContent = '🔒 ปิดยอดคะแนน';
+  } else {
+    vBtn.style.cssText = 'flex:1;padding:12px;border-radius:14px;font-size:14px;font-weight:700;background:rgba(90,191,90,.15);color:#5ABF5A;border:1px solid rgba(90,191,90,.3)';
+    vBtn.textContent = '🔓 เปิดยอดคะแนน';
+  }
+
+  const sorted = [...data.teams].sort((a,b)=>b.score-a.score);
+  let miniHtml = '<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase">คะแนนปัจจุบัน</div>';
+  sorted.forEach(t=>{
+    miniHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div style="width:8px;height:8px;border-radius:50%;background:${t.color}"></div>
+      <div style="flex:1;font-size:14px;font-weight:600;color:rgba(255,255,255,.6)">${t.emoji} ${t.nameTh}</div>
+      <div style="font-size:16px;font-weight:900;color:${t.color}">${t.score}</div>
+    </div>`;
+  });
+  document.getElementById('adminScoresMini').innerHTML = miniHtml;
+
+  const sel = document.getElementById('teamSelector');
+  sel.innerHTML = '';
+  data.teams.forEach(t=>{
+    const btn = document.createElement('button');
+    btn.className = 'team-btn';
+    const active = selectedTeam===t.id;
+    btn.style.cssText = active
+      ? `background:${t.color};color:#1A1040;border:none;box-shadow:0 4px 20px ${t.glow}`
+      : 'background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.08)';
+    btn.textContent = `${t.emoji} ${t.nameTh}`;
+    btn.onclick = ()=>{ selectedTeam=t.id; renderAdmin(); updateAddBtn(); };
+    sel.appendChild(btn);
+  });
+
+  const qc = document.getElementById('quickBtns');
+  qc.innerHTML = '';
+  [5,10,20,50,100,-5,-10].forEach(p=>{
+    const b = document.createElement('button');
+    b.className = 'quick-btn';
+    b.style.cssText = p>0 ? 'background:rgba(90,191,90,.1);color:#5ABF5A;border:1px solid rgba(90,191,90,.2)' : 'background:rgba(232,69,60,.1);color:#E8453C;border:1px solid rgba(232,69,60,.2)';
+    b.textContent = (p>0?'+':'')+p;
+    b.onclick = ()=>{ document.getElementById('pointsInput').value=p; updateAddBtn(); };
+    qc.appendChild(b);
+  });
+
+  document.getElementById('histLabel').textContent = `📜 ประวัติการให้คะแนน (${data.history.length})`;
+  renderHistory();
+  updateAddBtn();
+}
+
+function updateAddBtn(){
+  const pts = document.getElementById('pointsInput').value;
+  const btn = document.getElementById('addScoreBtn');
+  if(!data) return;
+  const team = data.teams.find(t=>t.id===selectedTeam);
+  if(selectedTeam && pts){
+    btn.style.cssText = `width:100%;padding:16px;border-radius:16px;font-size:16px;font-weight:800;background:linear-gradient(135deg,${team?.color||'#FFD93D'},${team?.dark||'#B8960A'});color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.3);box-shadow:0 4px 20px ${team?.glow||'transparent'};border:none`;
+  } else {
+    btn.style.cssText = 'width:100%;padding:16px;border-radius:16px;font-size:16px;font-weight:800;background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border:none';
+  }
+}
+
+// ===== ACTIONS =====
+function handleLogin(){
+  const pass = document.getElementById('loginPassInput').value;
+  if(data && pass === data.password){
+    isAdmin = true;
+    showView('admin');
+  } else {
+    document.getElementById('loginError').classList.remove('hidden');
+    document.getElementById('loginPassInput').style.border = '2px solid #E8453C';
+  }
+}
+
+// ใช้ transaction กันคะแนนหายเวลาพี่ค่ายหลายคนกดพร้อมกัน
+async function handleAddScore(){
+  const pts = parseInt(document.getElementById('pointsInput').value, 10);
+  if(!selectedTeam || isNaN(pts) || !docRef) return;
+  const noteVal = document.getElementById('noteInput').value || '-';
+  const teamId = selectedTeam;
+  const btn = document.getElementById('addScoreBtn');
+  btn.disabled = true;
+
+  try{
+    await db.runTransaction(async tx=>{
+      const snap = await tx.get(docRef);
+      const d = snap.exists ? {...defaultData(), ...snap.data()} : defaultData();
+      if(!Array.isArray(d.teams) || !d.teams.length) d.teams = defaultData().teams;
+      if(!Array.isArray(d.history)) d.history = [];
+      const tm = d.teams.find(t=>t.id===teamId);
+      if(!tm) throw new Error('ไม่พบทีมนี้');
+      tm.score = Math.max(0, (tm.score||0) + pts);
+      d.history = [{
+        teamId, teamName: tm.nameTh, amount: pts, note: noteVal,
+        timestamp: new Date().toISOString()
+      }, ...d.history].slice(0,200);
+      tx.set(docRef, d);
+    });
+    const t = DEFAULT_TEAMS.find(x=>x.id===teamId);
+    showToast(`${pts>0?'+':''}${pts} คะแนน → ${t?t.nameTh:''}`);
+    document.getElementById('pointsInput').value = '';
+    document.getElementById('noteInput').value = '';
+  }catch(e){
+    console.error('Add score error:', e);
+    showToast('บันทึกไม่สำเร็จ ลองใหม่','error');
+  }
+  btn.disabled = false;
+}
+
+async function toggleVisibility(){
+  if(!data) return;
+  data.scoresVisible = !data.scoresVisible;
+  await saveData();
+  showToast(data.scoresVisible ? 'เปิดยอดคะแนนแล้ว' : 'ปิดยอดคะแนนแล้ว', 'info');
+  renderAdmin();
+}
+
+function toggleHistory(){
+  historyOpen = !historyOpen;
+  document.getElementById('historyList').classList.toggle('hidden', !historyOpen);
+  document.getElementById('histArrow').textContent = historyOpen ? '▲' : '▼';
+}
+
+function renderHistory(){
+  const el = document.getElementById('historyList');
+  if(!data || !data.history.length){
+    el.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:13px;text-align:center;padding:16px">ยังไม่มีประวัติ</div>';
+    return;
+  }
+  let html = '';
+  data.history.forEach(h=>{
+    const team = data.teams.find(t=>t.id===h.teamId);
+    const time = new Date(h.timestamp);
+    const ts = time.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+    const clr = h.amount>0 ? '#5ABF5A' : '#E8453C';
+    const noteHtml = h.note && h.note!=='-' ? `<div style="font-size:11px;color:rgba(255,255,255,.3)">${h.note}</div>` : '';
+    html += `<div class="hist-item">
+      <div style="width:6px;height:6px;border-radius:50%;background:${team?.color||'#888'}"></div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.6)">${h.teamName} <span style="color:${clr};font-weight:800">${h.amount>0?'+':''}${h.amount}</span></div>
+        ${noteHtml}
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,.2)">${ts}</div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function toggleSettings(){
+  settingsOpen = !settingsOpen;
+  document.getElementById('settingsPanel').classList.toggle('hidden', !settingsOpen);
+  document.getElementById('settingsArrow').textContent = settingsOpen ? '▲' : '▼';
+}
+
+async function changePassword(){
+  const np = document.getElementById('newPassInput').value;
+  if(np.length>=4 && data){
+    data.password = np;
+    await saveData();
+    document.getElementById('newPassInput').value = '';
+    settingsOpen = false;
+    document.getElementById('settingsPanel').classList.add('hidden');
+    document.getElementById('settingsArrow').textContent = '▼';
+    showToast('เปลี่ยนรหัสผ่านแล้ว');
+  }
+}
+
+async function resetAllScores(){
+  if(!data) return;
+  if(!confirm('⚠️ รีเซ็ตคะแนนทุกทีมเป็น 0 ? ลบประวัติทั้งหมด?')) return;
+  data.teams.forEach(t=> t.score=0);
+  data.history = [];
+  await saveData();
+  showToast('รีเซ็ตคะแนนทั้งหมดแล้ว','info');
+  renderAdmin();
+}
+
+function logout(){
+  isAdmin = false;
+  selectedTeam = null;
+  showView('scoreboard');
+}
+
+// ===== EVENT LISTENERS =====
+document.getElementById('pointsInput').addEventListener('input', updateAddBtn);
+document.getElementById('noteInput').addEventListener('keydown', e=>{ if(e.key==='Enter') handleAddScore(); });
+document.getElementById('loginPassInput').addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
+document.getElementById('newPassInput').addEventListener('input', function(){
+  const btn = document.getElementById('savePassBtn');
+  if(this.value.length>=4){
+    btn.style.background='rgba(90,191,90,.15)'; btn.style.color='#5ABF5A';
+  } else {
+    btn.style.background='rgba(255,255,255,.04)'; btn.style.color='rgba(255,255,255,.2)';
+  }
+});
+
+// ===== INIT =====
+createBgOrbs();
+(function(){
+  const cfg = getConfig();
+  if(!cfg){ showSetup(); return; }
+  startFirebase(cfg);
+})();
+</script>
+</body>
+</html>
